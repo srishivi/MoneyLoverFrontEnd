@@ -1,0 +1,105 @@
+<div class="bg-white rounded-xl shadow p-2 sm:p-6 mt-4 sm:mt-6 overflow-x-auto">
+  <h2 class="text-lg sm:text-2xl font-bold mb-2 sm:mb-4 text-blue-700 flex items-center gap-2">
+    <span class="material-icons text-blue-400">receipt_long</span> Transactions
+  </h2>
+
+  <!-- Filters -->
+  <div class="flex flex-col sm:flex-row flex-wrap gap-2 sm:gap-4 mb-4 sm:mb-6 items-center">
+    <select class="border rounded px-3 py-2 w-full sm:w-auto" [(ngModel)]="filterType">
+      <option value="">All Types</option>
+      <option value="expense">Expense</option>
+      <option value="income">Income</option>
+    </select>
+    <select class="border rounded px-3 py-2 w-full sm:w-auto" [(ngModel)]="filterCategory">
+      <option value="">All Categories</option>
+      <option *ngFor="let cat of uniqueCategories" [value]="cat">{{ cat }}</option>
+    </select>
+    <input class="border rounded px-3 py-2 flex-1 min-w-0" type="text" placeholder="Search description..." [(ngModel)]="filterText">
+    <div class="flex gap-1 flex-wrap">
+      <button type="button" class="px-3 py-1 rounded-full text-xs font-semibold border border-blue-400 bg-blue-50 text-blue-700 focus:bg-blue-200" [class.bg-blue-600]="filterMode==='all'" [class.text-white]="filterMode==='all'" (click)="filterMode='all'">All</button>
+      <button type="button" class="px-3 py-1 rounded-full text-xs font-semibold border border-blue-400 bg-blue-50 text-blue-700 focus:bg-blue-200" [class.bg-blue-600]="filterMode==='month'" [class.text-white]="filterMode==='month'" (click)="filterMode='month'">Month</button>
+      <button type="button" class="px-3 py-1 rounded-full text-xs font-semibold border border-blue-400 bg-blue-50 text-blue-700 focus:bg-blue-200" [class.bg-blue-600]="filterMode==='year'" [class.text-white]="filterMode==='year'" (click)="filterMode='year'">Year</button>
+      <button type="button" class="px-3 py-1 rounded-full text-xs font-semibold border border-blue-400 bg-blue-50 text-blue-700 focus:bg-blue-200" [class.bg-blue-600]="filterMode==='custom'" [class.text-white]="filterMode==='custom'" (click)="filterMode='custom'">Custom</button>
+    </div>
+    <ng-container [ngSwitch]="filterMode">
+      <ng-container *ngSwitchCase="'month'">
+        <input class="border rounded px-3 py-2 w-full sm:w-auto" type="month" [(ngModel)]="filterMonth">
+      </ng-container>
+      <ng-container *ngSwitchCase="'year'">
+        <input class="border rounded px-3 py-2 w-full sm:w-auto" type="number" min="2000" max="2100" [(ngModel)]="filterYear" placeholder="Year">
+      </ng-container>
+      <ng-container *ngSwitchCase="'custom'">
+        <input class="border rounded px-3 py-2 w-full sm:w-auto" type="date" [(ngModel)]="filterStartDate" placeholder="Start date">
+        <input class="border rounded px-3 py-2 w-full sm:w-auto" type="date" [(ngModel)]="filterEndDate" placeholder="End date">
+      </ng-container>
+    </ng-container>
+  </div>
+
+  <div class="overflow-x-auto">
+    <table class="min-w-full divide-y divide-gray-200 text-xs sm:text-base">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-2 sm:px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
+          <th class="px-2 sm:px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Amount</th>
+          <th class="px-2 sm:px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Category</th>
+          <th class="px-2 sm:px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Tags</th>
+          <th class="px-2 sm:px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Description</th>
+          <th class="px-2 sm:px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+          <th class="px-2 sm:px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        <ng-container *ngFor="let group of groupedTransactions">
+          <!-- Group header -->
+          <tr class="bg-blue-50">
+            <td colspan="7" class="font-bold text-blue-700 px-2 sm:px-4 py-2">
+              <span class="text-base sm:text-lg">
+                {{ filterMode === 'year' ? group.group :
+                  filterMode === 'month' ? (group.group + ' (' + (group.transactions[0].timestamp | date:'MMMM yyyy') + ')') :
+                  filterMode === 'custom' ? (group.group | date:'mediumDate') :
+                  (group.group + ' (' + (group.transactions[0].timestamp | date:'MMMM yyyy') + ')')
+                }}
+              </span>
+              <span class="ml-4 text-xs sm:text-base font-normal">Total: ₹{{ group.total | number:'1.2-2' }}</span>
+            </td>
+          </tr>
+          <!-- Transactions in group -->
+          <tr *ngFor="let transaction of group.transactions">
+            <td class="px-2 sm:px-4 py-2">
+              <span [ngClass]="{
+                'text-red-600': transaction.type === 'expense',
+                'text-green-600': transaction.type === 'income'
+              }" class="flex items-center gap-1">
+                <span class="material-icons text-lg" [ngClass]="transaction.type === 'expense' ? 'text-red-400' : 'text-green-400'">
+                  {{ transaction.type === 'expense' ? 'arrow_downward' : 'arrow_upward' }}
+                </span>
+                {{ transaction.type | titlecase }}
+              </span>
+            </td>
+            <td class="px-2 sm:px-4 py-2 font-semibold">₹{{ transaction.amount | replaceComma | number:'1.2-2' }}</td>
+            <td class="px-2 sm:px-4 py-2">{{ transaction.category.name || 'N/A' }}</td>
+            <td class="px-2 sm:px-4 py-2">
+              <ng-container *ngIf="transaction.tags?.length; else noTags">
+                <ng-container *ngFor="let tag of transaction.tags; let last = last">
+                  <span class="inline-block bg-blue-100 text-blue-700 rounded px-2 py-1 text-xs mr-1">{{ tag.name }}</span><span *ngIf="!last">, </span>
+                </ng-container>
+              </ng-container>
+              <ng-template #noTags><span class="text-gray-400"></span></ng-template>
+            </td>
+            <td class="px-2 sm:px-4 py-2">{{ transaction.description || '' }}</td>
+            <td class="px-2 sm:px-4 py-2">{{ transaction.timestamp ? (transaction.timestamp | date:'short') : '' }}</td>
+            <td class="px-2 sm:px-4 py-2 flex gap-2 items-center">
+              <button (click)="$event.stopPropagation(); edit.emit(transaction)" class="text-blue-500 hover:text-blue-700" title="Edit">
+                <span class="material-icons">edit</span>
+              </button>
+              <button (click)="$event.stopPropagation(); delete.emit(transaction)" class="text-red-500 hover:text-red-700" title="Delete">
+                <span class="material-icons">delete</span>
+              </button>
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+  </div>
+  <div *ngIf="!groupedTransactions.length" class="text-gray-500 text-center py-8">No transactions found.</div>
+</div>
