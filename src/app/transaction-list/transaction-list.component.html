@@ -49,7 +49,7 @@
         </tr>
       </thead>
       <tbody class="bg-white divide-y divide-gray-200">
-        <ng-container *ngFor="let group of groupedTransactions">
+        <ng-container *ngFor="let group of pagedGroupedTransactions">
           <!-- Group header -->
           <tr class="bg-blue-50">
             <td colspan="7" class="font-bold text-blue-700 px-2 sm:px-4 py-2">
@@ -102,4 +102,13 @@
     </table>
   </div>
   <div *ngIf="!groupedTransactions.length" class="text-gray-500 text-center py-8">No transactions found.</div>
+
+  <!-- Pagination Controls -->
+  <div *ngIf="totalPages > 1" class="flex justify-center items-center gap-2 mt-4">
+    <button (click)="setPage(page - 1)" [disabled]="page === 1" class="px-3 py-1 rounded border bg-gray-100 hover:bg-gray-200 disabled:opacity-50">Prev</button>
+    <span *ngFor="let p of [].constructor(totalPages); let i = index">
+      <button (click)="setPage(i+1)" [class.bg-blue-500]="page === (i+1)" [class.text-white]="page === (i+1)" class="px-2 py-1 rounded border mx-1" [class.bg-gray-100]="page !== (i+1)">{{ i+1 }}</button>
+    </span>
+    <button (click)="setPage(page + 1)" [disabled]="page === totalPages" class="px-3 py-1 rounded border bg-gray-100 hover:bg-gray-200 disabled:opacity-50">Next</button>
+  </div>
 </div>

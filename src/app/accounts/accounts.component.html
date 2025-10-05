@@ -1,0 +1,28 @@
+<div class="bg-white rounded-xl shadow p-4 sm:p-6 mt-4 sm:mt-6">
+  <h2 class="text-lg sm:text-2xl font-bold mb-4 text-blue-700 flex items-center gap-2">
+    <span class="material-icons text-blue-400">account_circle</span> Account
+  </h2>
+  <div *ngIf="user; else notLoggedIn">
+    <div class="mb-4">
+      <div class="font-semibold">Username:</div>
+      <div class="text-gray-700">{{ user.username }}</div>
+    </div>
+    <div class="mb-4">
+      <div class="font-semibold">Email:</div>
+      <div class="text-gray-700">{{ user.email }}</div>
+    </div>
+    <div class="mb-6">
+      <div class="font-semibold mb-2">Categories</div>
+      <ul class="mb-2">
+        <li *ngFor="let cat of categories" class="py-1">- {{ cat.name }}</li>
+      </ul>
+      <div class="flex gap-2">
+        <input class="border rounded px-3 py-2 flex-1" type="text" placeholder="Add new category" [(ngModel)]="newCategory">
+        <button (click)="onAddCategory()" class="px-4 py-2 rounded bg-blue-500 text-white font-semibold hover:bg-blue-600">Add</button>
+      </div>
+    </div>
+  </div>
+  <ng-template #notLoggedIn>
+    <div class="text-gray-500">Please log in to view your account.</div>
+  </ng-template>
+</div>

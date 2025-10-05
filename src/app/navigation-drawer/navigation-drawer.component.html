@@ -1,0 +1,18 @@
+<nav class="drawer bg-blue-700 text-white w-64 min-h-screen flex flex-col">
+  <div class="flex items-center gap-2 px-4 py-6 border-b border-blue-800">
+    <span class="material-icons text-3xl">account_balance_wallet</span>
+    <span class="text-xl font-bold">Money Lover</span>
+  </div>
+  <ul class="flex-1 px-2 py-4">
+    <li>
+      <button class="w-full text-left px-4 py-2 rounded hover:bg-blue-800" [class.bg-blue-900]="activeSection==='transactions'" (click)="selectSection('transactions')">
+        <span class="material-icons align-middle mr-2">receipt_long</span> Transactions
+      </button>
+    </li>
+    <li>
+      <button class="w-full text-left px-4 py-2 rounded hover:bg-blue-800" [class.bg-blue-900]="activeSection==='accounts'" (click)="selectSection('accounts')">
+        <span class="material-icons align-middle mr-2">account_circle</span> Account
+      </button>
+    </li>
+  </ul>
+</nav>

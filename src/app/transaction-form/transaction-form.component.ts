@@ -8,7 +8,7 @@ import { FormsModule } from '@angular/forms';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './transaction-form.component.html',
-  styleUrl: './transaction-form.component.css'
+  styleUrls: ['./transaction-form.component.css']
 })
 export class TransactionFormComponent implements OnChanges {
   @Input() categories: Category[] = [];
@@ -34,7 +34,7 @@ export class TransactionFormComponent implements OnChanges {
         amount: this.formData.amount,
         type: this.formData.type,
         category_id: String(this.formData.category.id),
-        tag_ids: this.formData.tags.map(t => String(t.id)),
+        tag_ids: this.formData.tags.map((t: any) => String(t.id)),
         description: this.formData.description,
         timestamp: this.formData.timestamp.slice(0, 16)
       };
@@ -47,6 +47,21 @@ export class TransactionFormComponent implements OnChanges {
         description: '',
         timestamp: new Date().toISOString().slice(0, 16)
       };
+    }
+  }
+
+  // Evaluate arithmetic expression for amount
+  evaluateAmountExpression() {
+    if (typeof this.form.amount === 'string' && this.form.amount.match(/^[0-9+\-*/ ().]+$/)) {
+      try {
+        // eslint-disable-next-line no-eval
+        const result = Function('return ' + this.form.amount)();
+        if (!isNaN(result) && isFinite(result)) {
+          this.form.amount = result.toString();
+        }
+      } catch (e) {
+        // Ignore invalid expressions
+      }
     }
   }
 
@@ -68,6 +83,7 @@ export class TransactionFormComponent implements OnChanges {
   }
 
   onSubmit() {
+    this.evaluateAmountExpression();
     if (this.validate()) {
       this.save.emit(this.form);
     }

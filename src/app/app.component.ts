@@ -4,11 +4,13 @@ import { RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { TransactionListComponent } from './transaction-list/transaction-list.component';
 import { TransactionFormComponent } from './transaction-form/transaction-form.component';
+import { AccountsComponent } from './accounts/accounts.component';
+import { NavigationDrawerComponent } from './navigation-drawer/navigation-drawer.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, CommonModule, TransactionListComponent, TransactionFormComponent],
+  imports: [RouterOutlet, CommonModule, TransactionListComponent, TransactionFormComponent, AccountsComponent, NavigationDrawerComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
@@ -20,6 +22,12 @@ export class AppComponent implements OnInit {
   showTransactionForm = false;
   editingTransaction: Transaction | null = null;
   confirmDeleteId: number | null = null;
+  user: any = { username: 'demo_user', email: 'demo@example.com' }; // Replace with real user data if available
+  activeSection: string = 'transactions';
+  onSectionChange(section: string) {
+    this.activeSection = section;
+    this.showTransactionForm = false;
+  }
 
   constructor(private api: ApiService) {}
 
@@ -27,6 +35,12 @@ export class AppComponent implements OnInit {
     this.api.getCategories().subscribe(data => this.categories = data);
     this.api.getTags().subscribe(data => this.tags = data);
     this.api.getTransactions().subscribe(data => this.transactions = data);
+  }
+
+  onAddCategory(name: string) {
+    this.api.createCategory({ name }).subscribe(newCat => {
+      this.categories = [...this.categories, newCat];
+    });
   }
 
   getTotal(type: 'income' | 'expense'): number {

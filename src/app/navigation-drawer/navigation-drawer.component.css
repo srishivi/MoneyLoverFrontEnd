@@ -1,0 +1,44 @@
+.drawer {
+  background: #fff;
+  color: #222;
+  width: 250px;
+  min-height: 100vh;
+  box-shadow: 2px 0 12px rgba(60, 180, 90, 0.08);
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  border-right: 2px solid #e6f4ea;
+}
+.drawer .material-icons {
+  color: #43b36a;
+}
+.drawer .font-bold, .drawer .text-xl {
+  color: #43b36a;
+}
+.drawer ul li button {
+  background: transparent;
+  color: #222;
+  font-weight: 500;
+  border-radius: 8px;
+  margin-bottom: 4px;
+  transition: background 0.2s, color 0.2s;
+  padding-left: 12px;
+}
+.drawer ul li button:hover, .drawer ul li button.bg-blue-900, .drawer ul li button.active {
+  background: #e6f4ea;
+  color: #43b36a;
+}
+.drawer ul li button .material-icons {
+  color: #43b36a;
+}
+@media (max-width: 640px) {
+  .drawer {
+    width: 100vw;
+    min-width: 0;
+    position: relative;
+  }
+}

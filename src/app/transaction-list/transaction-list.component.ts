@@ -1,5 +1,7 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { Transaction } from '../api.service';
+
+
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ReplaceCommaPipe } from '../replace-comma.pipe';
@@ -9,7 +11,7 @@ import { ReplaceCommaPipe } from '../replace-comma.pipe';
   standalone: true,
   imports: [CommonModule, FormsModule, ReplaceCommaPipe],
   templateUrl: './transaction-list.component.html',
-  styleUrl: './transaction-list.component.css'
+  styleUrls: ['./transaction-list.component.css']
 })
 export class TransactionListComponent implements OnInit {
   @Input() transactions: Transaction[] = [];
@@ -26,13 +28,17 @@ export class TransactionListComponent implements OnInit {
   filterStartDate: string = '';
   filterEndDate: string = '';
 
+  // Pagination state
+  page: number = 1;
+  pageSize: number = 10;
+
   constructor() {}
 
   ngOnInit(): void {}
 
   // Grouped transactions for Money Lover-style display
   get groupedTransactions(): { group: string, total: number, transactions: Transaction[] }[] {
-    // Filter transactions first
+    // ...existing groupedTransactions code...
     let filtered = this.transactions.filter(t => {
       const date = t.timestamp.slice(0, 10);
       const year = date.slice(0, 4);
@@ -80,7 +86,24 @@ export class TransactionListComponent implements OnInit {
     return groupArr;
   }
 
+  get pagedGroupedTransactions() {
+    const start = (this.page - 1) * this.pageSize;
+    const end = start + this.pageSize;
+    return this.groupedTransactions.slice(start, end);
+  }
+
+  get totalPages() {
+    return Math.ceil(this.groupedTransactions.length / this.pageSize) || 1;
+  }
+
+  setPage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.page = page;
+    }
+  }
+
   get uniqueCategories(): string[] {
     return Array.from(new Set(this.transactions.map(t => t.category.name)));
   }
 }
+

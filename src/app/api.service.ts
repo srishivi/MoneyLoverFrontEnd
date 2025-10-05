@@ -38,8 +38,13 @@ export class ApiService {
     return this.http.get<Category[]>(`${this.baseUrl}/categories/`);
   }
 
+
   getTags(): Observable<Tag[]> {
     return this.http.get<Tag[]>(`${this.baseUrl}/tags/`);
+  }
+
+  createCategory(data: { name: string }): Observable<Category> {
+    return this.http.post<Category>(`${this.baseUrl}/categories/`, data);
   }
 
   getTransactions(): Observable<Transaction[]> {

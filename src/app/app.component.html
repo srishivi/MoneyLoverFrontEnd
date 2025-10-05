@@ -7,31 +7,40 @@
 <!-- * * * * * * * to get started with your project! * * * * * * * -->
 <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
 
-<div class="bg-gradient-to-r from-green-400 via-blue-400 to-blue-600 text-white rounded-xl shadow-lg p-4 sm:p-6 flex flex-col sm:flex-row items-center justify-between sticky top-0 z-40 mb-4 sm:mb-8">
-  <div class="flex-1 text-center sm:text-left">
-    <div class="text-lg sm:text-2xl font-bold">Balance</div>
-    <div class="text-2xl sm:text-3xl font-extrabold mt-1">₹{{ getBalance() | number:'1.2-2' }}</div>
-  </div>
-  <div class="flex flex-row gap-6 mt-4 sm:mt-0">
-    <div class="text-center">
-      <div class="text-sm">Income</div>
-      <div class="text-green-100 text-lg font-bold">₹{{ getTotal('income') | number:'1.2-2' }}</div>
-    </div>
-    <div class="text-center">
-      <div class="text-sm">Expense</div>
-      <div class="text-red-100 text-lg font-bold">₹{{ getTotal('expense') | number:'1.2-2' }}</div>
-    </div>
-  </div>
-</div>
 
-<h1 class="text-2xl sm:text-3xl font-bold text-center text-blue-700 my-6 sm:my-8">Money Lover App</h1>
-
-<div class="max-w-4xl mx-auto px-2 sm:px-0">
-  <button class="mb-4 sm:mb-6 bg-green-600 text-white px-4 py-2 rounded-full shadow hover:bg-green-700 w-full sm:w-auto flex items-center justify-center gap-2" (click)="openTransactionForm()">
-    <span class="material-icons">add_circle</span> Add Transaction
-  </button>
-  <app-transaction-list [transactions]="transactions" (edit)="onEdit($event)" (delete)="onDelete($event)"></app-transaction-list>
-  <app-transaction-form *ngIf="showTransactionForm" [categories]="categories" [tags]="tags" [formData]="editingTransaction" (save)="saveTransaction($event)" (close)="closeTransactionForm()"></app-transaction-form>
+<div class="flex min-h-screen">
+  <app-navigation-drawer [activeSection]="activeSection" (sectionChange)="onSectionChange($event)"></app-navigation-drawer>
+  <div class="flex-1 ml-64 p-4">
+    <div class="bg-gradient-to-r from-green-400 via-blue-400 to-blue-600 text-white rounded-xl shadow-lg p-4 sm:p-6 flex flex-col sm:flex-row items-center justify-between sticky top-0 z-40 mb-4 sm:mb-8">
+      <div class="flex-1 text-center sm:text-left">
+        <div class="text-lg sm:text-2xl font-bold">Balance</div>
+        <div class="text-2xl sm:text-3xl font-extrabold mt-1">₹{{ getBalance() | number:'1.2-2' }}</div>
+      </div>
+      <div class="flex flex-row gap-6 mt-4 sm:mt-0">
+        <div class="text-center">
+          <div class="text-sm">Income</div>
+          <div class="text-green-100 text-lg font-bold">₹{{ getTotal('income') | number:'1.2-2' }}</div>
+        </div>
+        <div class="text-center">
+          <div class="text-sm">Expense</div>
+          <div class="text-red-100 text-lg font-bold">₹{{ getTotal('expense') | number:'1.2-2' }}</div>
+        </div>
+      </div>
+    </div>
+    <h1 class="text-2xl sm:text-3xl font-bold text-center text-blue-700 my-6 sm:my-8">Money Lover App</h1>
+    <div class="max-w-4xl mx-auto px-2 sm:px-0">
+      <ng-container *ngIf="activeSection === 'accounts'; else transactionsSection">
+        <app-accounts [user]="user" [categories]="categories" (addCategory)="onAddCategory($event)"></app-accounts>
+      </ng-container>
+      <ng-template #transactionsSection>
+        <button class="mb-4 sm:mb-6 bg-green-600 text-white px-4 py-2 rounded-full shadow hover:bg-green-700 w-full sm:w-auto flex items-center justify-center gap-2" (click)="openTransactionForm()">
+          <span class="material-icons">add_circle</span> Add Transaction
+        </button>
+        <app-transaction-list [transactions]="transactions" (edit)="onEdit($event)" (delete)="onDelete($event)"></app-transaction-list>
+        <app-transaction-form *ngIf="showTransactionForm" [categories]="categories" [tags]="tags" [formData]="editingTransaction" (save)="saveTransaction($event)" (close)="closeTransactionForm()"></app-transaction-form>
+      </ng-template>
+    </div>
+  </div>
 </div>
 
 <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
